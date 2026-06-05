@@ -274,6 +274,51 @@
       100% { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     }
     .share-card.new { animation: highlight 1.5s ease-out; }
+
+    /* ── 모니터링 그리드 ── */
+    .monitor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .monitor-card {
+      border: 1px solid #eaeaea; border-radius: 10px;
+      padding: 12px; background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: border-color 0.3s;
+    }
+    .monitor-card.active-typing { border-color: #3B6D11; }
+    .monitor-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .monitor-group-badge {
+      font-size: 12px; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px;
+      background: #EAF3DE; color: #27500A;
+    }
+    .monitor-status {
+      font-size: 10px; padding: 2px 6px; border-radius: 8px;
+      font-weight: 500;
+    }
+    .monitor-status.typing  { background: #FFF3CD; color: #856404; }
+    .monitor-status.done    { background: #D4EDDA; color: #155724; }
+    .monitor-status.empty   { background: #f0f0f0; color: #999; }
+    .monitor-field {
+      font-size: 11px; color: #333;
+      border-bottom: 1px solid #f0f0f0; padding: 4px 0;
+      line-height: 1.4;
+    }
+    .monitor-field:last-child { border-bottom: none; }
+    .monitor-field-label { color: #888; font-size: 10px; margin-bottom: 2px; }
+    .monitor-field-val { color: #222; word-break: break-all; }
+    .monitor-field-val.empty { color: #ccc; font-style: italic; }
+    .monitor-building {
+      font-size: 12px; font-weight: 600; color: #3B6D11;
+      margin-bottom: 6px; display: flex; align-items: center; gap-4px;
+    }
+    .typing-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: #f0a500; margin-left: 4px;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
   </style>
 </head>
 <body>
@@ -301,6 +346,7 @@
     <div class="nav-tab" onclick="switchTab('research')"><i class="ti ti-search"></i><br>조사하기</div>
     <div class="nav-tab" onclick="switchTab('discuss')"><i class="ti ti-message-dots"></i><br>의논하기</div>
     <div class="nav-tab" onclick="switchTab('share')"><i class="ti ti-presentation"></i><br>발표보기</div>
+    <div class="nav-tab" onclick="switchTab('monitor')"><i class="ti ti-eye"></i><br>선생님</div>
   </div>
 
   <!-- ① 건물 선택 -->
@@ -392,11 +438,11 @@
     <div class="form-section">
       <h3><i class="ti ti-pencil"></i>조사 내용</h3>
       <label>이 건축물은 어떤 용도로 쓰였나요?</label>
-      <textarea id="r-use" placeholder="예: 외적의 침입을 막기 위해 쌓은 산성으로, 군사들이 지키던 곳이에요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="r-use" placeholder="예: 외적의 침입을 막기 위해 쌓은 산성으로, 군사들이 지키던 곳이에요."></textarea>
       <label>어떤 특징이 있나요? (모양, 크기, 재료 등)</label>
-      <textarea id="r-feature" placeholder="예: 돌로 쌓은 성벽이며, 산을 따라 약 6km 이어져 있어요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="r-feature" placeholder="예: 돌로 쌓은 성벽이며, 산을 따라 약 6km 이어져 있어요."></textarea>
       <label>지금은 어떤 모습인가요?</label>
-      <textarea id="r-now" placeholder="예: 지금도 일부 성벽이 남아 있어 탐방로로 이용돼요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="r-now" placeholder="예: 지금도 일부 성벽이 남아 있어 탐방로로 이용돼요."></textarea>
     </div>
     <button class="btn-primary" onclick="goToDiscuss()">조사 완료 → 의논하기</button>
     <button class="btn-secondary" onclick="switchTab('select')">← 건물 다시 선택</button>
@@ -417,7 +463,7 @@
     <div class="form-section">
       <h3><i class="ti ti-users"></i>옛날 사람들의 생활 모습</h3>
       <label>이 건축물을 통해 알 수 있는 옛날 사람들의 생활은?</label>
-      <textarea id="d-life" placeholder="예: 외적의 침입이 많아서 성을 쌓아 마을을 지켰어요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="d-life" placeholder="예: 외적의 침입이 많아서 성을 쌓아 마을을 지켰어요."></textarea>
       <label>당시 사람들이 가장 중요하게 생각한 것은?</label>
       <div class="chip-grid" id="value-chips">
         <div class="chip" onclick="toggleChip(this)">안전·국방</div>
@@ -434,21 +480,21 @@
     <div class="form-section">
       <h3><i class="ti ti-bulb"></i>옛날 사람들의 지혜</h3>
       <label>어떤 지혜와 기술이 담겨 있나요?</label>
-      <textarea id="d-wisdom" placeholder="예: 산의 지형을 이용해 성을 쌓아서 더 튼튼하게 만들었어요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="d-wisdom" placeholder="예: 산의 지형을 이용해 성을 쌓아서 더 튼튼하게 만들었어요."></textarea>
       <label>오늘날 우리가 배울 수 있는 점은?</label>
-      <textarea id="d-learn" placeholder="예: 자연환경을 잘 활용하는 지혜, 공동체를 위해 함께 힘을 모으는 협력 정신을 배울 수 있어요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="d-learn" placeholder="예: 자연환경을 잘 활용하는 지혜, 공동체를 위해 함께 힘을 모으는 협력 정신을 배울 수 있어요."></textarea>
     </div>
 
     <div class="form-section">
       <h3><i class="ti ti-map-pin"></i>김포는 어떤 곳이었을까?</h3>
       <label>이 건축물로 보아 옛날 김포는 어떤 곳이었나요?</label>
-      <textarea id="d-kimpo" placeholder="예: 바다와 강이 가까워 외적의 침입을 많이 받았던 곳이었을 것 같아요."></textarea>
+      <textarea oninput="scheduleAutoSave()" id="d-kimpo" placeholder="예: 바다와 강이 가까워 외적의 침입을 많이 받았던 곳이었을 것 같아요."></textarea>
     </div>
 
     <div class="form-section">
       <h3><i class="ti ti-star"></i>모둠이 느낀 점</h3>
       <label>조사하면서 놀라거나 새롭게 알게 된 점</label>
-      <textarea id="d-feeling" placeholder="예: 우리 동네에 이렇게 오래된 건축물이 있다는 게 신기했어요!"></textarea>
+      <textarea oninput="scheduleAutoSave()" id="d-feeling" placeholder="예: 우리 동네에 이렇게 오래된 건축물이 있다는 게 신기했어요!"></textarea>
     </div>
 
     <button class="btn-primary" id="submit-btn" onclick="submitShare()">🔥 전체 공유하기</button>
@@ -464,6 +510,15 @@
     </div>
     <div id="share-list"></div>
     <button class="btn-secondary" onclick="clearAll()" style="margin-top:16px;color:#888;border-color:#ddd">전체 초기화 (선생님용)</button>
+  </div>
+
+  <!-- ⑤ 선생님 모니터링 -->
+  <div id="screen-monitor" class="screen">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <p class="section-title" style="margin:0">📡 실시간 모니터링</p>
+      <span style="font-size:11px;color:#888">입력 중인 내용 포함</span>
+    </div>
+    <div id="monitor-grid"></div>
   </div>
 </div>
 
@@ -485,8 +540,9 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const SHARE_REF = db.ref('kimpo_buildings/shares');   // 제출 결과
-const PICK_REF  = db.ref('kimpo_buildings/picks');    // 건물 선택 현황
+const SHARE_REF  = db.ref('kimpo_buildings/shares');   // 제출 결과
+const PICK_REF   = db.ref('kimpo_buildings/picks');    // 건물 선택 현황
+const DRAFT_REF  = db.ref('kimpo_buildings/drafts');   // 입력 중 임시저장
 
 // ── 건물 목록 ────────────────────────────────────────────────────
 const buildings = [
@@ -502,8 +558,10 @@ let state = {
   building: null,
   images: [],
   sharedData: {},   // Firebase에서 받아온 전체 공유 데이터
-  picksData: {}     // Firebase에서 받아온 건물 선택 현황
+  picksData: {},    // Firebase에서 받아온 건물 선택 현황
+  draftsData: {}    // 입력 중 임시저장 데이터
 };
+let autoSaveTimer = null;
 
 // ── 로딩 숨기기 ───────────────────────────────────────────────────
 function hideLoading() {
@@ -535,6 +593,14 @@ SHARE_REF.on('value', snap => {
 PICK_REF.on('value', snap => {
   state.picksData = snap.val() || {};
   updateBuildingTakenBadges();
+});
+
+// ── Firebase 실시간 리스너: 임시저장(입력 중) ────────────────────
+DRAFT_REF.on('value', snap => {
+  state.draftsData = snap.val() || {};
+  renderMonitor();
+  // 발표보기에도 입력 중 내용 반영 (제출 안 된 모둠도 보임)
+  renderShare();
 });
 
 // ── 모둠 선택 ─────────────────────────────────────────────────────
@@ -576,6 +642,36 @@ function goToResearch() {
   document.getElementById('r-name').value   = b.name;
   document.getElementById('r-period').value = b.period;
   switchTab('research');
+}
+
+// ── 자동저장 (입력 중 1.5초 후 Firebase에 저장) ─────────────────
+function scheduleAutoSave() {
+  if (!state.group || !state.building) return;
+  if (autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    const b = buildings.find(x => x.id === state.building);
+    const draft = {
+      group:    state.group,
+      building: b,
+      name:     document.getElementById('r-name')?.value     || '',
+      period:   document.getElementById('r-period')?.value   || '',
+      location: document.getElementById('r-location')?.value || '',
+      heritage: document.getElementById('r-heritage')?.value || '',
+      emoji:    document.getElementById('r-emoji')?.value    || '',
+      use:      document.getElementById('r-use')?.value      || '',
+      feature:  document.getElementById('r-feature')?.value  || '',
+      now:      document.getElementById('r-now')?.value      || '',
+      life:     document.getElementById('d-life')?.value     || '',
+      values:   getSelectedChips(),
+      wisdom:   document.getElementById('d-wisdom')?.value   || '',
+      learn:    document.getElementById('d-learn')?.value    || '',
+      kimpo:    document.getElementById('d-kimpo')?.value    || '',
+      feeling:  document.getElementById('d-feeling')?.value  || '',
+      updatedAt: Date.now(),
+      submitted: false
+    };
+    DRAFT_REF.child(`group${state.group}`).set(draft);
+  }, 1500);
 }
 
 // ── 의논하기로 이동 ───────────────────────────────────────────────
@@ -661,6 +757,8 @@ function submitShare() {
   // group 번호를 키로 저장 → 같은 모둠이 다시 제출하면 덮어씌움
   SHARE_REF.child(`group${state.group}`).set(entry)
     .then(() => {
+      // draft에 제출 완료 표시
+      DRAFT_REF.child(`group${state.group}`).update({ submitted: true });
       showToast(`${state.group}모둠 발표 자료가 공유되었습니다! 🎉`);
       btn.disabled = false;
       btn.textContent = '🔥 전체 공유하기';
@@ -770,7 +868,7 @@ function switchTab(name) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   const target = document.getElementById(`screen-${name}`);
   if (target) target.classList.add('active');
-  const tabs = ['select','research','discuss','share'];
+  const tabs = ['select','research','discuss','share','monitor'];
   const idx  = tabs.indexOf(name);
   if (idx >= 0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
   window.scrollTo(0, 0);
@@ -835,12 +933,74 @@ function copyToClipboard() {
     .catch(() => alert('복사에 실패했습니다. 직접 텍스트를 선택해 복사해 주세요.'));
 }
 
+// ── 모니터링 화면 렌더링 ─────────────────────────────────────────
+function renderMonitor() {
+  const container = document.getElementById('monitor-grid');
+  if (!container) return;
+
+  // 공유 완료 데이터와 임시저장 데이터를 합쳐서 표시
+  // 공유 완료가 우선
+  const merged = {};
+  for (let i = 1; i <= 5; i++) {
+    const key = `group${i}`;
+    if (state.sharedData[key]) {
+      merged[key] = { ...state.sharedData[key], submitted: true };
+    } else if (state.draftsData[key]) {
+      merged[key] = { ...state.draftsData[key], submitted: false };
+    } else {
+      merged[key] = { group: i, submitted: false, empty: true };
+    }
+  }
+
+  const fields = [
+    { key: 'name',     label: '건축물 이름' },
+    { key: 'use',      label: '용도' },
+    { key: 'feature',  label: '특징' },
+    { key: 'life',     label: '생활 모습' },
+    { key: 'wisdom',   label: '지혜' },
+    { key: 'feeling',  label: '느낀 점' },
+  ];
+
+  container.innerHTML = `<div class="monitor-grid">` +
+    Object.values(merged).map(e => {
+      const isTyping  = !e.submitted && !e.empty && e.updatedAt && (Date.now() - e.updatedAt < 30000);
+      const isDone    = e.submitted;
+      const statusHtml = isDone
+        ? `<span class="monitor-status done">✅ 공유완료</span>`
+        : isTyping
+          ? `<span class="monitor-status typing">✏️ 입력 중<span class="typing-dot"></span></span>`
+          : `<span class="monitor-status empty">대기 중</span>`;
+
+      const buildingHtml = e.building
+        ? `<div class="monitor-building">${e.building.emoji || '🏛️'} ${e.building.name}</div>`
+        : `<div class="monitor-building" style="color:#ccc">건물 미선택</div>`;
+
+      const fieldsHtml = e.empty ? `<div style="text-align:center;padding:12px 0;color:#ccc;font-size:12px">아직 입력 없음</div>` :
+        fields.map(f => `
+          <div class="monitor-field">
+            <div class="monitor-field-label">${f.label}</div>
+            <div class="monitor-field-val ${e[f.key] ? '' : 'empty'}">${e[f.key] || '미입력'}</div>
+          </div>`).join('');
+
+      return `
+        <div class="monitor-card ${isTyping ? 'active-typing' : ''}">
+          <div class="monitor-card-header">
+            <span class="monitor-group-badge">${e.group}모둠</span>
+            ${statusHtml}
+          </div>
+          ${buildingHtml}
+          ${fieldsHtml}
+        </div>`;
+    }).join('') + `</div>`;
+}
+
 // ── 전체 초기화 (선생님용) ────────────────────────────────────────
 function clearAll() {
   if (!confirm('모든 공유 자료와 건물 선택을 초기화할까요?\n(선생님만 사용하세요)')) return;
   Promise.all([
     SHARE_REF.remove(),
-    PICK_REF.remove()
+    PICK_REF.remove(),
+    DRAFT_REF.remove()
   ]).then(() => showToast('초기화되었어요.'))
     .catch(err => showToast('초기화 실패: ' + err.message));
 }
@@ -858,6 +1018,8 @@ function showToast(msg) {
 setTimeout(() => hideLoading(), 5000);
 
 // ── onclick에서 호출되는 함수들을 전역으로 노출 ──────────────────
+window.scheduleAutoSave = scheduleAutoSave;
+window.renderMonitor    = renderMonitor;
 window.selectGroup      = selectGroup;
 window.selectBuilding   = selectBuilding;
 window.goToResearch     = goToResearch;
