@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>김포시 옛 건축물로 알아보는 우리 지역</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f8f9fa; color: #333; }
+    .app { min-height: 100vh; max-width: 600px; margin: 0 auto; background: #ffffff; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+
+    /* ── 헤더 ── */
+    .header {
+      background: #3B6D11; color: white;
+      padding: 18px 16px; text-align: center;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+    .header p  { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+
+    /* 연결 상태 배지 */
+    .conn-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; padding: 3px 9px; border-radius: 12px;
+      margin-top: 6px; font-weight: 500;
+      transition: all 0.3s;
+    }
+    .conn-badge.online  { background: rgba(255,255,255,0.2); color: #fff; }
+    .conn-badge.offline { background: rgba(255,80,80,0.3);   color: #ffc; }
+    .conn-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .conn-badge.online  .conn-dot { background: #7fff7f; animation: pulse 2s infinite; }
+    .conn-badge.offline .conn-dot { background: #ff8080; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* ── 탭 ── */
+    .nav-tabs {
+      display: flex; background: #fff;
+      border-bottom: 1px solid #eaeaea;
+      position: sticky; top: 72px; z-index: 99;
+    }
+    .nav-tab {
+      flex: 1; padding: 12px 4px; text-align: center;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      color: #666; border-bottom: 3px solid transparent;
+      transition: all 0.2s; line-height: 1.4;
+    }
+    .nav-tab i { font-size: 18px; margin-bottom: 2px; display: inline-block; }
+    .nav-tab.active { color: #3B6D11; border-bottom-color: #3B6D11; font-weight: 600; }
+
+    /* ── 화면 ── */
+    .screen { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-title {
+      font-size: 14px; font-weight: 600; color: #555;
+      margin-bottom: 12px; margin-top: 8px;
+      border-left: 3px solid #3B6D11; padding-left: 6px;
+    }
+
+    /* ── 모둠 선택 ── */
+    .group-selector {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 20px;
+    }
+    .group-btn {
+      padding: 12px; border-radius: 8px;
+      border: 1.5px solid #eaeaea; background: #fff;
+      cursor: pointer; text-align: center;
+      font-size: 14px; font-weight: 500; color: #333;
+      transition: all 0.2s; position: relative;
+    }
+    .group-btn.selected { border-color: #3B6D11; background: #EAF3DE; color: #3B6D11; font-weight: 600; }
+    .group-btn-5 { grid-column: 1 / -1; }
+    /* 이미 제출한 모둠 표시 */
+    .group-btn .submitted-dot {
+      position: absolute; top: 6px; right: 8px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #3B6D11; display: none;
+    }
+    .group-btn.submitted .submitted-dot { display: block; }
+
+    /* ── 건축물 카드 ── */
+    .building-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-top: 12px; margin-bottom: 24px;
+    }
+    .building-card {
+      border: 1px solid #e2e8f0; border-radius: 12px;
+      cursor: pointer; background: #fdfdfd;
+      transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      overflow: hidden;
+    }
+    .building-card .img-area {
+      width: 100%; height: 85px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .building-card .card-info { padding: 12px; }
+    .building-name { font-size: 15px; font-weight: 700; color: #2d3748; display: block; }
+    .building-tag  { font-size: 11px; color: #718096; margin-top: 6px; display: block; }
+    .building-card:hover { background: #f7fafc; border-color: #cbd5e0; }
+    .building-card.selected {
+      border-color: #3B6D11; background-color: #f4f9f0;
+      box-shadow: 0 0 0 1px #3B6D11;
+    }
+    .building-card.selected .building-name { color: #3B6D11; }
+    /* 다른 모둠이 선택 중인 건물 표시 */
+    .building-card .taken-badge {
+      display: none; font-size: 10px; color: #888;
+      padding: 2px 6px; background: #f0f0f0; border-radius: 10px;
+      margin-top: 4px;
+    }
+    .building-card.taken .taken-badge { display: inline-block; }
+
+    /* ── 폼 ── */
+    .form-section {
+      background: #fff; border-radius: 12px;
+      border: 1px solid #eaeaea; padding: 16px; margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .form-section h3 {
+      font-size: 15px; font-weight: 600; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px; color: #222;
+    }
+    .form-section h3 i { font-size: 18px; color: #3B6D11; }
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: #555; margin-bottom: 6px; margin-top: 14px;
+    }
+    label:first-of-type { margin-top: 0; }
+    textarea, input[type="text"] {
+      width: 100%; border-radius: 8px;
+      border: 1px solid #ccc; padding: 10px 12px; font-size: 13px;
+      background: #f9f9f9; color: #333; font-family: inherit;
+      transition: all 0.2s;
+    }
+    textarea:focus, input[type="text"]:focus {
+      outline: none; border-color: #3B6D11; background: #fff;
+      box-shadow: 0 0 0 2px rgba(59,109,17,0.1);
+    }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    /* ── 사진 업로드 ── */
+    .img-upload-area {
+      border: 2px dashed #ccc; border-radius: 8px;
+      padding: 18px; text-align: center; cursor: pointer;
+      background: #f9f9f9; transition: all 0.2s; margin-top: 6px;
+    }
+    .img-upload-area:hover { border-color: #3B6D11; background: #F4F9EE; }
+    .img-upload-area i { font-size: 26px; color: #888; }
+    .img-upload-area p { font-size: 12px; color: #666; margin-top: 6px; line-height: 1.4; }
+    .img-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .img-preview-item {
+      aspect-ratio: 1; border-radius: 8px; border: 1px solid #eaeaea;
+      overflow: hidden; position: relative;
+      display: flex; align-items: center; justify-content: center; background: #EAF3DE;
+    }
+    .img-preview-item img { width:100%; height:100%; object-fit:cover; }
+    .img-preview-item .del-btn {
+      position: absolute; top: 4px; right: 4px;
+      background: rgba(0,0,0,0.6); color: white; border: none;
+      border-radius: 50%; width: 20px; height: 20px;
+      font-size: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── 칩 ── */
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .chip {
+      padding: 6px 12px; border-radius: 20px;
+      border: 1px solid #ddd; background: #f9f9f9;
+      font-size: 12px; cursor: pointer; color: #444; transition: all 0.15s;
+    }
+    .chip.selected { background: #EAF3DE; border-color: #3B6D11; color: #27500A; font-weight: 600; }
+
+    /* ── 버튼 ── */
+    .btn-primary {
+      display: block; width: 100%; padding: 14px;
+      background: #3B6D11; color: white; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; margin-top: 16px;
+      box-shadow: 0 2px 4px rgba(59,109,17,0.2);
+    }
+    .btn-primary:hover { background: #2f570e; }
+    .btn-primary:disabled { background: #aaa; cursor: not-allowed; box-shadow: none; }
+    .btn-secondary {
+      display: block; width: 100%; padding: 12px;
+      background: #fff; color: #3B6D11;
+      border: 1.5px solid #3B6D11; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px;
+    }
+    .btn-copy {
+      display: block; width: 100%; padding: 14px;
+      background: #1a5276; color: white; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; margin-top: 16px;
+      box-shadow: 0 2px 4px rgba(26,82,118,0.2);
+    }
+    .btn-copy:hover { background: #154360; }
+
+    /* ── 발표 카드 ── */
+    .share-card {
+      background: #fff; border-radius: 12px;
+      border: 1px solid #eaeaea; padding: 16px; margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .share-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .group-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: #EAF3DE; color: #27500A; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .tag { font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #f1f1f1; color: #555; }
+    .wisdom-category { background: #f9f9f9; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border-left: 3px solid #cbdcc0; }
+    .wisdom-category-label { font-size: 11px; font-weight: 600; color: #666; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+    .wisdom-category-val { font-size: 13px; color: #222; line-height: 1.5; }
+
+    /* ── 빈 상태 ── */
+    .empty-state { text-align: center; padding: 60px 24px; color: #999; }
+    .empty-state i { font-size: 44px; margin-bottom: 12px; display: block; color: #ccc; }
+    .empty-state p { font-size: 14px; line-height: 1.5; }
+
+    /* ── 로딩 ── */
+    .loading-overlay {
+      position: fixed; inset: 0; background: rgba(255,255,255,0.85);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 200; gap: 12px;
+    }
+    .loading-overlay.hidden { display: none; }
+    .spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid #eaeaea; border-top-color: #3B6D11;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay p { font-size: 13px; color: #555; }
+
+    /* ── 스텝 표시 ── */
+    .step-indicator {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 11px; color: #888; margin-bottom: 16px; justify-content: center;
+    }
+    .step-dot {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 1.5px solid #ddd;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; background: #fff; color: #888;
+    }
+    .step-dot.done    { background: #3B6D11; border-color: #3B6D11; color: white; }
+    .step-dot.current { border-color: #3B6D11; color: #3B6D11; font-weight: bold; box-shadow: 0 0 0 2px rgba(59,109,17,0.15); }
+    .step-line        { flex: 0.1; height: 2px; background: #eee; }
+    .step-line.done   { background: #3B6D11; }
+
+    /* ── 선택된 건물 미리보기 ── */
+    .selected-building-preview {
+      display: flex; align-items: center; gap: 12px;
+      background: #EAF3DE; border-radius: 8px; padding: 12px; margin-bottom: 16px;
+    }
+    .selected-building-preview .name   { font-size: 15px; font-weight: 600; color: #27500A; }
+    .selected-building-preview .period { font-size: 12px; color: #3B6D11; margin-top: 2px; }
+
+    /* ── 토스트 ── */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(43,82,12,0.95); color: white;
+      padding: 12px 24px; border-radius: 30px;
+      font-size: 13px; font-weight: 500; transition: transform 0.3s ease;
+      z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── 실시간 업데이트 깜박임 ── */
+    @keyframes highlight {
+      0%   { box-shadow: 0 0 0 3px rgba(59,109,17,0.5); }
+      100% { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    }
+    .share-card.new { animation: highlight 1.5s ease-out; }
+  </style>
+</head>
+<body>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <p>Firebase에 연결 중...</p>
+</div>
+
+<div class="app">
+  <div class="header">
+    <h1>🏛️ 김포시 옛 건축물로 알아보는 우리 지역</h1>
+    <p>경기도 김포시 | 사회 3-1 2단원</p>
+    <div class="conn-badge offline" id="conn-badge">
+      <span class="conn-dot"></span>
+      <span id="conn-text">연결 중...</span>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="switchTab('select')"><i class="ti ti-building"></i><br>건물 선택</div>
+    <div class="nav-tab" onclick="switchTab('research')"><i class="ti ti-search"></i><br>조사하기</div>
+    <div class="nav-tab" onclick="switchTab('discuss')"><i class="ti ti-message-dots"></i><br>의논하기</div>
+    <div class="nav-tab" onclick="switchTab('share')"><i class="ti ti-presentation"></i><br>발표보기</div>
+  </div>
+
+  <!-- ① 건물 선택 -->
+  <div id="screen-select" class="screen active">
+    <p class="section-title">우리 모둠 선택</p>
+    <div class="group-selector">
+      <div class="group-btn" onclick="selectGroup(1)" id="gbtn-1">1모둠<span class="submitted-dot"></span></div>
+      <div class="group-btn" onclick="selectGroup(2)" id="gbtn-2">2모둠<span class="submitted-dot"></span></div>
+      <div class="group-btn" onclick="selectGroup(3)" id="gbtn-3">3모둠<span class="submitted-dot"></span></div>
+      <div class="group-btn" onclick="selectGroup(4)" id="gbtn-4">4모둠<span class="submitted-dot"></span></div>
+      <div class="group-btn group-btn-5" onclick="selectGroup(5)" id="gbtn-5">5모둠<span class="submitted-dot"></span></div>
+    </div>
+
+    <p class="section-title">조사할 건축물 선택</p>
+    <div class="building-grid">
+      <div class="building-card" id="bc-tongjin" onclick="selectBuilding('tongjin')">
+        <div class="img-area" style="background:#EAF3DE"><span style="font-size:36px">🏛️</span></div>
+        <div class="card-info">
+          <div class="building-name">통진이청</div>
+          <span class="building-tag">조선시대 관아</span>
+          <span class="taken-badge" id="taken-tongjin"></span>
+        </div>
+      </div>
+      <div class="building-card" id="bc-gimpo_hyanggyo" onclick="selectBuilding('gimpo_hyanggyo')">
+        <div class="img-area" style="background:#FBEAF0"><span style="font-size:36px">📚</span></div>
+        <div class="card-info">
+          <div class="building-name">김포향교</div>
+          <span class="building-tag">지방 교육기관</span>
+          <span class="taken-badge" id="taken-gimpo_hyanggyo"></span>
+        </div>
+      </div>
+      <div class="building-card" id="bc-munsu_fortress" onclick="selectBuilding('munsu_fortress')">
+        <div class="img-area" style="background:#FAEEDA"><span style="font-size:36px">🧱</span></div>
+        <div class="card-info">
+          <div class="building-name">문수산성</div>
+          <span class="building-tag">조선시대 산성</span>
+          <span class="taken-badge" id="taken-munsu_fortress"></span>
+        </div>
+      </div>
+      <div class="building-card" id="bc-old_church" onclick="selectBuilding('old_church')">
+        <div class="img-area" style="background:#E6F1FB"><span style="font-size:36px">⛪</span></div>
+        <div class="card-info">
+          <div class="building-name">구 김포성당</div>
+          <span class="building-tag">근대 석조 건축물</span>
+          <span class="taken-badge" id="taken-old_church"></span>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goToResearch()">선택 완료 → 조사하기</button>
+  </div>
+
+  <!-- ② 조사하기 -->
+  <div id="screen-research" class="screen">
+    <div class="step-indicator">
+      <div class="step-dot done">1</div>
+      <div class="step-line done"></div>
+      <div class="step-dot current">2</div>
+      <div class="step-line"></div>
+      <div class="step-dot">3</div>
+      <div class="step-line"></div>
+      <div class="step-dot">4</div>
+    </div>
+    <div id="selected-preview"></div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-book"></i>건축물 기본 정보</h3>
+      <label>건축물 이름</label>
+      <input type="text" id="r-name" placeholder="예: 문수산성">
+      <label>만들어진 시기</label>
+      <input type="text" id="r-period" placeholder="예: 조선 시대 (약 600년 전)">
+      <label>위치 / 주소</label>
+      <input type="text" id="r-location" placeholder="예: 김포시 월곶면 문수산">
+      <label>지정 문화재 여부</label>
+      <input type="text" id="r-heritage" placeholder="예: 경기도 기념물 제139호">
+    </div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-camera"></i>사진 자료</h3>
+      <div class="img-upload-area" onclick="triggerUpload()">
+        <i class="ti ti-photo-plus"></i>
+        <p>사진을 추가하거나<br>이모지로 표현해요</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(event)">
+      <div class="img-preview-grid" id="img-preview-grid"></div>
+      <label style="margin-top:14px">이모지로 건축물 표현하기</label>
+      <input type="text" id="r-emoji" placeholder="예: 🏯 🧱 🗼">
+    </div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-pencil"></i>조사 내용</h3>
+      <label>이 건축물은 어떤 용도로 쓰였나요?</label>
+      <textarea id="r-use" placeholder="예: 외적의 침입을 막기 위해 쌓은 산성으로, 군사들이 지키던 곳이에요."></textarea>
+      <label>어떤 특징이 있나요? (모양, 크기, 재료 등)</label>
+      <textarea id="r-feature" placeholder="예: 돌로 쌓은 성벽이며, 산을 따라 약 6km 이어져 있어요."></textarea>
+      <label>지금은 어떤 모습인가요?</label>
+      <textarea id="r-now" placeholder="예: 지금도 일부 성벽이 남아 있어 탐방로로 이용돼요."></textarea>
+    </div>
+    <button class="btn-primary" onclick="goToDiscuss()">조사 완료 → 의논하기</button>
+    <button class="btn-secondary" onclick="switchTab('select')">← 건물 다시 선택</button>
+  </div>
+
+  <!-- ③ 의논하기 -->
+  <div id="screen-discuss" class="screen">
+    <div class="step-indicator">
+      <div class="step-dot done">1</div>
+      <div class="step-line done"></div>
+      <div class="step-dot done">2</div>
+      <div class="step-line done"></div>
+      <div class="step-dot current">3</div>
+      <div class="step-line"></div>
+      <div class="step-dot">4</div>
+    </div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-users"></i>옛날 사람들의 생활 모습</h3>
+      <label>이 건축물을 통해 알 수 있는 옛날 사람들의 생활은?</label>
+      <textarea id="d-life" placeholder="예: 외적의 침입이 많아서 성을 쌓아 마을을 지켰어요."></textarea>
+      <label>당시 사람들이 가장 중요하게 생각한 것은?</label>
+      <div class="chip-grid" id="value-chips">
+        <div class="chip" onclick="toggleChip(this)">안전·국방</div>
+        <div class="chip" onclick="toggleChip(this)">농사·식량</div>
+        <div class="chip" onclick="toggleChip(this)">교육·학문</div>
+        <div class="chip" onclick="toggleChip(this)">종교·신앙</div>
+        <div class="chip" onclick="toggleChip(this)">무역·교류</div>
+        <div class="chip" onclick="toggleChip(this)">물·수자원</div>
+        <div class="chip" onclick="toggleChip(this)">교통·이동</div>
+        <div class="chip" onclick="toggleChip(this)">공동체·협력</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-bulb"></i>옛날 사람들의 지혜</h3>
+      <label>어떤 지혜와 기술이 담겨 있나요?</label>
+      <textarea id="d-wisdom" placeholder="예: 산의 지형을 이용해 성을 쌓아서 더 튼튼하게 만들었어요."></textarea>
+      <label>오늘날 우리가 배울 수 있는 점은?</label>
+      <textarea id="d-learn" placeholder="예: 자연환경을 잘 활용하는 지혜, 공동체를 위해 함께 힘을 모으는 협력 정신을 배울 수 있어요."></textarea>
+    </div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-map-pin"></i>김포는 어떤 곳이었을까?</h3>
+      <label>이 건축물로 보아 옛날 김포는 어떤 곳이었나요?</label>
+      <textarea id="d-kimpo" placeholder="예: 바다와 강이 가까워 외적의 침입을 많이 받았던 곳이었을 것 같아요."></textarea>
+    </div>
+
+    <div class="form-section">
+      <h3><i class="ti ti-star"></i>모둠이 느낀 점</h3>
+      <label>조사하면서 놀라거나 새롭게 알게 된 점</label>
+      <textarea id="d-feeling" placeholder="예: 우리 동네에 이렇게 오래된 건축물이 있다는 게 신기했어요!"></textarea>
+    </div>
+
+    <button class="btn-primary" id="submit-btn" onclick="submitShare()">🔥 전체 공유하기</button>
+    <button class="btn-copy" onclick="copyToClipboard()">📋 패들렛용 복사하기</button>
+    <button class="btn-secondary" onclick="switchTab('research')">← 조사 내용 수정</button>
+  </div>
+
+  <!-- ④ 발표보기 -->
+  <div id="screen-share" class="screen">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+      <p class="section-title" style="margin:0">전체 발표 현황</p>
+      <span id="share-count" style="font-size:12px;color:#888"></span>
+    </div>
+    <div id="share-list"></div>
+    <button class="btn-secondary" onclick="clearAll()" style="margin-top:16px;color:#888;border-color:#ddd">전체 초기화 (선생님용)</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+window.onload = function() {
+// ── Firebase 초기화 ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAIdpQUtdgDMTaJBWAd0bZPc3KbM2owaw4",
+  authDomain: "msja-3-3.firebaseapp.com",
+  databaseURL: "https://msja-3-3-default-rtdb.firebaseio.com",
+  projectId: "msja-3-3",
+  storageBucket: "msja-3-3.firebasestorage.app",
+  messagingSenderId: "399225655763",
+  appId: "1:399225655763:web:c783845a53f8f98395df26",
+  measurementId: "G-H337ZH5X6K"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const SHARE_REF = db.ref('kimpo_buildings/shares');   // 제출 결과
+const PICK_REF  = db.ref('kimpo_buildings/picks');    // 건물 선택 현황
+
+// ── 건물 목록 ────────────────────────────────────────────────────
+const buildings = [
+  { id:'tongjin',        emoji:'🏛️', name:'통진이청',   period:'조선시대 관아',   color:'#EAF3DE' },
+  { id:'gimpo_hyanggyo', emoji:'📚', name:'김포향교',   period:'지방 교육기관',   color:'#FBEAF0' },
+  { id:'munsu_fortress', emoji:'🧱', name:'문수산성',   period:'조선시대 산성',   color:'#FAEEDA' },
+  { id:'old_church',     emoji:'⛪', name:'구 김포성당', period:'근대 석조 건축물', color:'#E6F1FB' }
+];
+
+// ── 앱 상태 ───────────────────────────────────────────────────────
+let state = {
+  group: null,
+  building: null,
+  images: [],
+  sharedData: {},   // Firebase에서 받아온 전체 공유 데이터
+  picksData: {}     // Firebase에서 받아온 건물 선택 현황
+};
+
+// ── 로딩 숨기기 ───────────────────────────────────────────────────
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.add('hidden');
+}
+
+// ── 연결 상태 표시 ───────────────────────────────────────────────
+db.ref('.info/connected').on('value', snap => {
+  const badge = document.getElementById('conn-badge');
+  const text  = document.getElementById('conn-text');
+  if (snap.val()) {
+    badge.className = 'conn-badge online';
+    text.textContent = '실시간 연결됨';
+  } else {
+    badge.className = 'conn-badge offline';
+    text.textContent = '연결 끊김';
+  }
+});
+
+// ── Firebase 실시간 리스너: 공유 결과 ────────────────────────────
+SHARE_REF.on('value', snap => {
+  state.sharedData = snap.val() || {};
+  renderShare();
+  updateGroupSubmittedDots();
+  hideLoading();
+});
+
+// ── Firebase 실시간 리스너: 건물 선택 현황 ───────────────────────
+PICK_REF.on('value', snap => {
+  state.picksData = snap.val() || {};
+  updateBuildingTakenBadges();
+});
+
+// ── 모둠 선택 ─────────────────────────────────────────────────────
+function selectGroup(n) {
+  state.group = n;
+  document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById(`gbtn-${n}`).classList.add('selected');
+}
+
+// ── 건물 선택 ─────────────────────────────────────────────────────
+function selectBuilding(id) {
+  state.building = id;
+  document.querySelectorAll('.building-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`bc-${id}`).classList.add('selected');
+}
+
+// ── 조사하기로 이동 ───────────────────────────────────────────────
+function goToResearch() {
+  if (!state.group)    { showToast('모둠을 먼저 선택해 주세요! 😊'); return; }
+  if (!state.building) { showToast('조사할 건축물을 선택해 주세요! 🏛️'); return; }
+
+  const b = buildings.find(x => x.id === state.building);
+
+  // Firebase에 건물 선택 기록
+  PICK_REF.child(`group${state.group}`).set({
+    buildingId: state.building,
+    buildingName: b.name,
+    groupNum: state.group
+  });
+
+  document.getElementById('selected-preview').innerHTML = `
+    <div class="selected-building-preview">
+      <span style="font-size:28px">${b.emoji}</span>
+      <div>
+        <div class="name">${state.group}모둠 | ${b.name}</div>
+        <div class="period">${b.period}</div>
+      </div>
+    </div>`;
+  document.getElementById('r-name').value   = b.name;
+  document.getElementById('r-period').value = b.period;
+  switchTab('research');
+}
+
+// ── 의논하기로 이동 ───────────────────────────────────────────────
+function goToDiscuss() {
+  if (!document.getElementById('r-name').value.trim()) {
+    showToast('건축물 이름을 입력해 주세요!'); return;
+  }
+  switchTab('discuss');
+}
+
+// ── 사진 업로드 ───────────────────────────────────────────────────
+function triggerUpload() { document.getElementById('file-input').click(); }
+
+function handleFiles(e) {
+  Array.from(e.target.files).forEach(f => {
+    // 이미지를 축소해서 저장 (Firebase 용량 절약)
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX = 400;
+        let w = img.width, h = img.height;
+        if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
+        else        { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        state.images.push(canvas.toDataURL('image/jpeg', 0.6));
+        renderImagePreviews();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderImagePreviews() {
+  document.getElementById('img-preview-grid').innerHTML =
+    state.images.map((src, i) => `
+      <div class="img-preview-item">
+        <img src="${src}" alt="사진${i+1}">
+        <button class="del-btn" onclick="removeImg(${i})">×</button>
+      </div>`).join('');
+}
+
+function removeImg(i) { state.images.splice(i, 1); renderImagePreviews(); }
+function toggleChip(el) { el.classList.toggle('selected'); }
+function getSelectedChips() {
+  return Array.from(document.querySelectorAll('#value-chips .chip.selected')).map(c => c.textContent);
+}
+
+// ── Firebase에 제출 ───────────────────────────────────────────────
+function submitShare() {
+  if (!state.group || !state.building) {
+    showToast('모둠과 건축물을 먼저 선택해 주세요!'); return;
+  }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  const b = buildings.find(x => x.id === state.building);
+  const entry = {
+    group:    state.group,
+    building: b,
+    images:   state.images.slice(0, 3),
+    name:     document.getElementById('r-name').value,
+    period:   document.getElementById('r-period').value,
+    location: document.getElementById('r-location').value,
+    heritage: document.getElementById('r-heritage').value,
+    emoji:    document.getElementById('r-emoji').value,
+    use:      document.getElementById('r-use').value,
+    feature:  document.getElementById('r-feature').value,
+    now:      document.getElementById('r-now').value,
+    life:     document.getElementById('d-life').value,
+    values:   getSelectedChips(),
+    wisdom:   document.getElementById('d-wisdom').value,
+    learn:    document.getElementById('d-learn').value,
+    kimpo:    document.getElementById('d-kimpo').value,
+    feeling:  document.getElementById('d-feeling').value,
+    timestamp: new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }),
+  };
+
+  // group 번호를 키로 저장 → 같은 모둠이 다시 제출하면 덮어씌움
+  SHARE_REF.child(`group${state.group}`).set(entry)
+    .then(() => {
+      showToast(`${state.group}모둠 발표 자료가 공유되었습니다! 🎉`);
+      btn.disabled = false;
+      btn.textContent = '🔥 전체 공유하기';
+      setTimeout(() => switchTab('share'), 800);
+    })
+    .catch(err => {
+      showToast('저장 실패: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = '🔥 전체 공유하기';
+    });
+}
+
+// ── 발표 화면 렌더링 ─────────────────────────────────────────────
+let prevGroupKeys = new Set();
+
+function renderShare() {
+  const container = document.getElementById('share-list');
+  if (!container) return;
+
+  const entries = Object.values(state.sharedData).sort((a, b) => a.group - b.group);
+  document.getElementById('share-count').textContent =
+    entries.length ? `${entries.length}모둠 완료` : '';
+
+  if (entries.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="ti ti-presentation"></i>
+        <p>아직 공유된 자료가 없어요.<br>조사를 마친 모둠부터 공유해 보세요!</p>
+      </div>`;
+    return;
+  }
+
+  const currentKeys = new Set(entries.map(e => `group${e.group}`));
+
+  container.innerHTML = entries.map(e => {
+    const isNew = !prevGroupKeys.has(`group${e.group}`);
+    return `
+    <div class="share-card${isNew ? ' new' : ''}">
+      <div class="share-card-header">
+        <span class="group-badge">${e.group}모둠</span>
+        <span style="font-size:11px;color:#999">${e.timestamp || ''}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:32px">${e.building?.emoji || '🏛️'}</span>
+        <div>
+          <div style="font-size:15px;font-weight:600">${e.name || e.building?.name || ''}</div>
+          <div style="font-size:12px;color:#666">${e.period || e.building?.period || ''}</div>
+          ${e.location ? `<div style="font-size:11px;color:#888">${e.location}</div>` : ''}
+        </div>
+      </div>
+      ${e.images?.length ? `<div class="img-preview-grid" style="margin-bottom:10px">${e.images.map(src => `<div class="img-preview-item"><img src="${src}" alt=""></div>`).join('')}</div>` : ''}
+      ${e.use     ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-tool"></i> 용도</div><div class="wisdom-category-val">${e.use}</div></div>` : ''}
+      ${e.feature ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-layout"></i> 특징</div><div class="wisdom-category-val">${e.feature}</div></div>` : ''}
+      ${e.now     ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-clock"></i> 지금은?</div><div class="wisdom-category-val">${e.now}</div></div>` : ''}
+      ${e.life    ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-users"></i> 옛날 생활 모습</div><div class="wisdom-category-val">${e.life}</div></div>` : ''}
+      ${e.wisdom  ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-bulb"></i> 옛사람의 지혜</div><div class="wisdom-category-val">${e.wisdom}</div></div>` : ''}
+      ${e.learn   ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-sparkles"></i> 오늘날 배울 점</div><div class="wisdom-category-val">${e.learn}</div></div>` : ''}
+      ${e.kimpo   ? `<div class="wisdom-category"><div class="wisdom-category-label"><i class="ti ti-map-pin"></i> 옛날 김포는?</div><div class="wisdom-category-val">${e.kimpo}</div></div>` : ''}
+      ${e.values?.length ? `<div style="margin-top:6px"><div style="font-size:11px;color:#666;margin-bottom:4px">중요하게 여긴 것</div><div class="tag-row">${e.values.map(v => `<span class="tag">${v}</span>`).join('')}</div></div>` : ''}
+      ${e.feeling ? `<div style="margin-top:8px;padding:8px 10px;background:#f5f5f5;border-radius:8px;font-size:12px;color:#555">💬 ${e.feeling}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  prevGroupKeys = currentKeys;
+}
+
+// ── 모둠 버튼에 제출 완료 표시 ──────────────────────────────────
+function updateGroupSubmittedDots() {
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.getElementById(`gbtn-${i}`);
+    if (!btn) continue;
+    if (state.sharedData[`group${i}`]) {
+      btn.classList.add('submitted');
+    } else {
+      btn.classList.remove('submitted');
+    }
+  }
+}
+
+// ── 건물 카드에 "○모둠 조사 중" 표시 ────────────────────────────
+function updateBuildingTakenBadges() {
+  // 먼저 모두 초기화
+  buildings.forEach(b => {
+    const card  = document.getElementById(`bc-${b.id}`);
+    const badge = document.getElementById(`taken-${b.id}`);
+    if (card)  card.classList.remove('taken');
+    if (badge) badge.textContent = '';
+  });
+
+  // Firebase picks 데이터 반영
+  Object.values(state.picksData).forEach(pick => {
+    if (!pick.buildingId) return;
+    // 내 모둠이 선택한 건 표시 제외
+    if (state.group && pick.groupNum === state.group) return;
+    const badge = document.getElementById(`taken-${pick.buildingId}`);
+    const card  = document.getElementById(`bc-${pick.buildingId}`);
+    if (badge && card) {
+      badge.textContent = `${pick.groupNum}모둠 조사 중`;
+      card.classList.add('taken');
+    }
+  });
+}
+
+// ── 탭 전환 ───────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const target = document.getElementById(`screen-${name}`);
+  if (target) target.classList.add('active');
+  const tabs = ['select','research','discuss','share'];
+  const idx  = tabs.indexOf(name);
+  if (idx >= 0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── 패들렛 복사 ───────────────────────────────────────────────────
+function copyToClipboard() {
+  const g       = state.group ? `${state.group}모둠` : '우리 모둠';
+  const bName   = document.getElementById('r-name')?.value    || '미입력';
+  const period  = document.getElementById('r-period')?.value  || '미입력';
+  const location= document.getElementById('r-location')?.value|| '미입력';
+  const heritage= document.getElementById('r-heritage')?.value|| '미입력';
+  const emoji   = document.getElementById('r-emoji')?.value   || '🏛️';
+  const use     = document.getElementById('r-use')?.value     || '미입력';
+  const feature = document.getElementById('r-feature')?.value || '미입력';
+  const now     = document.getElementById('r-now')?.value     || '미입력';
+  const life    = document.getElementById('d-life')?.value    || '미입력';
+  const wisdom  = document.getElementById('d-wisdom')?.value  || '미입력';
+  const learn   = document.getElementById('d-learn')?.value   || '미입력';
+  const kimpo   = document.getElementById('d-kimpo')?.value   || '미입력';
+  const feeling = document.getElementById('d-feeling')?.value || '미입력';
+  const values  = getSelectedChips().join(', ') || '미선택';
+
+  const text = `[ ${g}의 김포 옛 건축물 조사 결과 ] ${emoji}
+
+📌 건축물 이름: ${bName}
+⏳ 만들어진 시기: ${period}
+📍 위치/주소: ${location}
+📜 문화재 지정 여부: ${heritage}
+
+🏢 어떤 용도로 쓰였나요?
+→ ${use}
+
+✨ 어떤 특징이 있나요?
+→ ${feature}
+
+🕰 지금은 어떤 모습인가요?
+→ ${now}
+
+👥 옛날 사람들의 생활 모습
+→ ${life}
+
+💡 옛사람의 지혜와 기술
+→ ${wisdom}
+
+🌱 오늘날 우리가 배울 수 있는 점
+→ ${learn}
+
+🗺 옛날 김포는 어떤 곳이었을까?
+→ ${kimpo}
+
+🏷 중요하게 여긴 것: ${values}
+
+💬 모둠이 느낀 점
+→ ${feeling}`.trim();
+
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      showToast('📢 복사 완료! 패들렛에 붙여넣으세요 😊');
+      alert('📢 우리 모둠의 조사 결과가 복사되었습니다!\n패들렛(Padlet)으로 이동하여 [Ctrl + V] 또는 화면을 길게 눌러 붙여넣으세요! 😊');
+    })
+    .catch(() => alert('복사에 실패했습니다. 직접 텍스트를 선택해 복사해 주세요.'));
+}
+
+// ── 전체 초기화 (선생님용) ────────────────────────────────────────
+function clearAll() {
+  if (!confirm('모든 공유 자료와 건물 선택을 초기화할까요?\n(선생님만 사용하세요)')) return;
+  Promise.all([
+    SHARE_REF.remove(),
+    PICK_REF.remove()
+  ]).then(() => showToast('초기화되었어요.'))
+    .catch(err => showToast('초기화 실패: ' + err.message));
+}
+
+// ── 토스트 메시지 ─────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── 페이지 로드 시 타임아웃 처리 (Firebase 연결 실패 대비) ──────
+setTimeout(() => hideLoading(), 5000);
+
+// ── onclick에서 호출되는 함수들을 전역으로 노출 ──────────────────
+window.selectGroup      = selectGroup;
+window.selectBuilding   = selectBuilding;
+window.goToResearch     = goToResearch;
+window.goToDiscuss      = goToDiscuss;
+window.triggerUpload    = triggerUpload;
+window.handleFiles      = handleFiles;
+window.removeImg        = removeImg;
+window.toggleChip       = toggleChip;
+window.submitShare      = submitShare;
+window.copyToClipboard  = copyToClipboard;
+window.switchTab        = switchTab;
+window.clearAll         = clearAll;
+window.showToast        = showToast;
+}; // window.onload 끝
+</script>
+</body>
+</html>
