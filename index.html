@@ -455,6 +455,10 @@ function initFirebase() {
         });
         db.ref('/').set(initData);
       }
+      // 교사 모드 입장 시 발표 상태 항상 초기화
+      if (isTeacher) {
+        db.ref('presentState').set({ active: false, group: 0, stage: 's1' });
+      }
       startListeners();
     });
   } catch(e) {
