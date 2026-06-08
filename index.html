@@ -22,21 +22,19 @@
 }
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
 
-/* ── FIREBASE SETUP SCREEN ── */
-#setup-screen{position:fixed;inset:0;background:var(--primary);z-index:9999;display:flex;align-items:center;justify-content:center;}
-.setup-box{background:#fff;border-radius:var(--rl);padding:32px;width:480px;max-width:95vw;}
-.setup-box h2{font-size:20px;font-weight:700;color:var(--primary);margin-bottom:6px;}
-.setup-box p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
-.setup-step{background:var(--surface2);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;font-size:13px;line-height:1.8;}
-.setup-step b{color:var(--primary);}
-.setup-step code{background:#e8f5e9;padding:1px 6px;border-radius:4px;font-size:12px;color:#1B4332;}
-.setup-input{width:100%;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:13px;padding:10px 12px;margin-bottom:8px;outline:none;transition:border-color .2s;}
-.setup-input:focus{border-color:var(--primary);}
-.setup-btn{width:100%;padding:12px;border-radius:var(--r);border:none;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s;}
-.setup-btn:hover{background:#1B4332;}
-.setup-err{font-size:12px;color:#e53935;margin-top:6px;display:none;}
-.demo-btn{width:100%;padding:10px;border-radius:var(--r);border:1.5px dashed var(--border);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:var(--muted);margin-top:8px;transition:all .2s;}
-.demo-btn:hover{background:var(--surface2);}
+/* ── 모둠 선택 화면 ── */
+#group-select-screen{position:fixed;inset:0;background:var(--primary);z-index:9999;display:flex;align-items:center;justify-content:center;}
+.gs-box{background:#fff;border-radius:var(--rl);padding:32px;width:480px;max-width:95vw;}
+.gs-box h2{font-size:22px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.gs-box p{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.gs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.gs-btn{padding:20px 10px;border-radius:var(--r);border:2.5px solid var(--border);font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;background:var(--surface2);color:var(--muted);transition:all .2s;text-align:center;}
+.gs-btn:hover{border-color:var(--primary-light);background:var(--primary-pale);color:var(--primary);}
+.gs-btn.active{border-color:var(--primary);background:var(--primary);color:#fff;}
+.gs-teacher{width:100%;padding:11px;border-radius:var(--r);border:1.5px dashed var(--border);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:var(--muted);transition:all .2s;}
+.gs-teacher:hover{background:var(--surface2);}
+.gs-confirm{width:100%;padding:14px;border-radius:var(--r);border:none;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;margin-top:12px;display:none;}
+.gs-confirm.vis{display:block;}
 
 /* ── LOADING ── */
 #loading-screen{position:fixed;inset:0;background:var(--primary);z-index:9998;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
@@ -72,6 +70,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .group-btn{padding:7px 8px;border-radius:var(--r);border:1px solid var(--border);font-family:var(--font);font-size:12px;cursor:pointer;background:var(--surface2);color:var(--muted);text-align:left;display:flex;align-items:center;gap:6px;transition:all .15s;}
 .group-btn:hover{background:var(--primary-pale);color:var(--primary);}
 .group-btn.active{background:var(--primary-pale);color:var(--primary);border-color:var(--primary-light);font-weight:700;}
+.group-btn.mine{border-color:var(--primary-light);background:var(--primary-pale);color:var(--primary);}
 .dot{width:7px;height:7px;border-radius:50%;background:#ccc;flex-shrink:0;}
 .dot.s1c{background:var(--s1);}
 .dot.s2c{background:var(--s2);}
@@ -81,6 +80,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .sb-action-btn{padding:7px;border-radius:var(--r);border:1.5px solid var(--border);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:var(--muted);text-align:center;transition:all .2s;}
 .sb-action-btn:hover{background:var(--surface2);}
 .content{flex:1;overflow-y:auto;padding:16px;}
+
+/* ── 학생 모둠 뷰 (사이드바 없음) ── */
+#student-app{display:none;flex-direction:column;min-height:100vh;}
+.student-topbar{background:var(--primary);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.student-topbar h1{font-size:16px;font-weight:700;}
+.student-topbar .sub{font-size:11px;opacity:.7;margin-top:2px;}
+.student-content{flex:1;overflow-y:auto;padding:16px;max-width:900px;margin:0 auto;width:100%;}
+.present-trigger-btn{padding:10px 22px;border-radius:var(--r);border:none;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;background:#52B788;color:#fff;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.present-trigger-btn:hover{background:#40997A;}
+.present-trigger-btn:active{transform:scale(.97);}
 
 /* ── OVERVIEW ── */
 .overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
@@ -178,6 +187,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .pcard-empty{font-size:11px;color:rgba(255,255,255,.25);font-style:italic;}
 .p-empty{text-align:center;padding:50px;color:rgba(255,255,255,.3);font-size:14px;}
 
+/* ── 학생 발표 오버레이 — 닫기 불가 ── */
+.student-present-notice{position:fixed;inset:0;background:#07111f;z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.student-present-notice.vis{display:flex;}
+.spn-icon{font-size:60px;}
+.spn-title{font-size:24px;font-weight:700;color:#fff;}
+.spn-sub{font-size:14px;color:rgba(255,255,255,.5);}
+
 /* ── PRINT MODAL ── */
 #print-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:none;align-items:center;justify-content:center;}
 #print-modal.vis{display:flex;}
@@ -206,26 +222,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 </head>
 <body>
 
-<!-- Firebase 설정 화면 -->
-<div id="setup-screen" style="display:none;">
-  <div class="setup-box">
-    <h2>🌱 Firebase 연결 설정</h2>
-    <p>실시간 모둠 공유를 위해 Firebase를 연결해 주세요.<br>아래 안내를 따라 무료로 설정할 수 있어요.</p>
-
-    <div class="setup-step">
-      <b>1단계.</b> <a href="https://console.firebase.google.com" target="_blank" style="color:var(--primary);">console.firebase.google.com</a> 접속 → 새 프로젝트 만들기
-    </div>
-    <div class="setup-step">
-      <b>2단계.</b> 프로젝트 → <code>Realtime Database</code> → 데이터베이스 만들기 (테스트 모드 선택)
-    </div>
-    <div class="setup-step">
-      <b>3단계.</b> 프로젝트 설정 → 웹 앱 추가 → <code>databaseURL</code> 값 복사
-    </div>
-
-    <input class="setup-input" id="input-dburl" placeholder="databaseURL 붙여넣기 (예: https://프로젝트명-default-rtdb.firebaseio.com)" />
-    <div class="setup-err" id="setup-err">올바른 databaseURL을 입력해 주세요.</div>
-    <button class="setup-btn" onclick="connectFirebase()">🔗 연결하기</button>
-    <button class="demo-btn" onclick="connectDemo()">🧪 데모 모드로 체험하기 (공유 안됨, 테스트용)</button>
+<!-- 모둠 선택 화면 -->
+<div id="group-select-screen">
+  <div class="gs-box">
+    <h2>🌱 동물의 한살이</h2>
+    <p>이 태블릿을 사용하는 모둠을 선택해 주세요.</p>
+    <div class="gs-grid" id="gs-grid"></div>
+    <button class="gs-confirm" id="gs-confirm" onclick="confirmGroup()">✅ 선택 완료</button>
+    <button class="gs-teacher" onclick="enterTeacherMode()">👩‍🏫 교사 모드로 입장</button>
   </div>
 </div>
 
@@ -239,11 +243,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <p>Firebase 연결 중...</p>
 </div>
 
-<!-- 앱 본체 -->
+<!-- ▼ 교사용 앱 전체 -->
 <div class="app" id="app" style="display:none;">
   <div class="topbar">
     <div class="topbar-left">
-      <h1>🌱 동물의 한살이 — 통합 모둠 학습창</h1>
+      <h1>🌱 동물의 한살이 — 교사 화면</h1>
       <div class="sub">과학 3학년 1학기 4단원 &nbsp;·&nbsp; <span class="sync-dot"></span><span id="sync-status">실시간 연결됨</span></div>
     </div>
     <div class="topbar-right">
@@ -278,14 +282,35 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   </div>
 </div>
 
-<!-- 발표 오버레이 -->
+<!-- ▼ 학생용 앱 (사이드바 없음) -->
+<div id="student-app" style="display:none;flex-direction:column;min-height:100vh;">
+  <div class="student-topbar">
+    <div>
+      <h1 id="student-title">🌱 동물의 한살이</h1>
+      <div class="sub"><span class="sync-dot"></span><span id="student-sync-status">실시간 공유 중</span></div>
+    </div>
+    <button class="present-trigger-btn" id="present-trigger-btn" onclick="studentTriggerPresent()">
+      📺 발표하기
+    </button>
+  </div>
+  <div class="student-content" id="student-content-area"></div>
+</div>
+
+<!-- 학생 발표 대기 화면 -->
+<div class="student-present-notice" id="student-present-notice">
+  <div class="spn-icon">📺</div>
+  <div class="spn-title">발표 화면이 열렸어요!</div>
+  <div class="spn-sub">선생님이 발표를 마치면 자동으로 돌아와요.</div>
+</div>
+
+<!-- 발표 오버레이 (교사 전용 컨트롤) -->
 <div id="present-overlay">
   <div class="ptopbar">
     <h2>📺 공유 발표 화면</h2>
     <div class="ptopbar-right">
       <button class="pnav-btn" onclick="prevGroup()">◀ 이전</button>
       <button class="pnav-btn" onclick="nextGroup()">다음 ▶</button>
-      <button class="pnav-btn pr" onclick="closePresent()">✕ 닫기</button>
+      <button class="pnav-btn pr" id="close-present-btn" onclick="closePresent()">✕ 닫기</button>
     </div>
   </div>
   <div class="p-stage-tabs">
@@ -339,7 +364,6 @@ const S2_ANIMAL_STEPS = {
 };
 
 let db = null;
-let demoMode = false;
 let phase = 'before';
 let currentView = 'overview';
 let pStage = 's1';
@@ -347,6 +371,8 @@ let pGroup = 0;
 let presentActive = false;
 let groupData = {};
 let _localTextTimers = {};
+let myGroupIndex = null;   // null = 교사, 0~4 = 학생 모둠
+let isTeacher = false;
 
 GROUPS.forEach(g => {
   groupData[g] = {
@@ -356,76 +382,94 @@ GROUPS.forEach(g => {
   };
 });
 
-// ── FIREBASE SETUP ──
-function connectFirebase() {
-  const url = document.getElementById('input-dburl').value.trim();
-  if (!url.startsWith('https://') || !url.includes('firebaseio.com')) {
-    document.getElementById('setup-err').style.display = 'block';
+// ── 모둠 선택 화면 ──
+function buildGroupSelectScreen() {
+  const saved = sessionStorage.getItem('myGroupIndex');
+  const savedTeacher = sessionStorage.getItem('isTeacher');
+  if (savedTeacher === '1') {
+    enterTeacherModeDirectly();
     return;
   }
-  localStorage.setItem('firebase_db_url', url);
-  initFirebase(url);
+  if (saved !== null) {
+    myGroupIndex = parseInt(saved);
+    enterStudentMode();
+    return;
+  }
+  // 선택 화면 표시
+  const grid = document.getElementById('gs-grid');
+  grid.innerHTML = GROUPS.map((g, i) =>
+    `<button class="gs-btn" id="gsb-${i}" onclick="selectMyGroup(${i})">${g}</button>`
+  ).join('');
+  document.getElementById('group-select-screen').style.display = 'flex';
 }
 
-function connectDemo() {
-  demoMode = true;
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('sync-status').textContent = '데모 모드 (저장 안됨)';
-  document.querySelector('.sync-dot').style.background = '#E9C46A';
-  buildGroupNav();
-  showOverview();
+let _selectedGroup = null;
+function selectMyGroup(i) {
+  _selectedGroup = i;
+  document.querySelectorAll('.gs-btn').forEach((b, bi) => b.classList.toggle('active', bi === i));
+  const btn = document.getElementById('gs-confirm');
+  btn.classList.add('vis');
+  btn.textContent = `✅ ${GROUPS[i]}으로 입장`;
 }
-
-function initFirebase(dbUrl) {
-  document.getElementById('setup-screen').style.display = 'none';
+function confirmGroup() {
+  if (_selectedGroup === null) return;
+  myGroupIndex = _selectedGroup;
+  sessionStorage.setItem('myGroupIndex', myGroupIndex);
+  enterStudentMode();
+}
+function enterTeacherMode() {
+  sessionStorage.setItem('isTeacher', '1');
+  enterTeacherModeDirectly();
+}
+function enterTeacherModeDirectly() {
+  isTeacher = true;
+  document.getElementById('group-select-screen').style.display = 'none';
   document.getElementById('loading-screen').style.display = 'flex';
+  initFirebase();
+}
+function enterStudentMode() {
+  document.getElementById('group-select-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  initFirebase();
+}
 
+// ── FIREBASE ──
+function initFirebase() {
   try {
-    const app = firebase.initializeApp({ databaseURL: dbUrl });
+    let app;
+    try { app = firebase.app(); } catch(e) { app = firebase.initializeApp({ databaseURL: 'https://msja-3-3-default-rtdb.firebaseio.com' }); }
     db = firebase.database(app);
 
-    // Test connection
     db.ref('.info/connected').on('value', snap => {
       const connected = snap.val();
-      document.getElementById('sync-status').textContent = connected ? '실시간 연결됨' : '연결 끊김...';
-      document.querySelector('.sync-dot').style.background = connected ? '#52B788' : '#E76F51';
+      const statusEl = document.getElementById(isTeacher ? 'sync-status' : 'student-sync-status');
+      if (statusEl) statusEl.textContent = connected ? (isTeacher ? '실시간 연결됨' : '실시간 공유 중') : '연결 끊김...';
     });
 
-    // Initialize DB structure if empty
     db.ref('/').once('value').then(snap => {
       const data = snap.val();
       if (!data) {
         const initData = { phase: 'before', presentState: { active: false, group: 0, stage: 's1' }, groups: {} };
         GROUPS.forEach(g => {
-          initData.groups[g] = {
-            s1Animal: '', s1Steps: ['','','',''], s1Images: ['','','',''],
-            s2Animal: '', s2Steps: ['','','',''], s2Images: ['','','',''],
-            s1Done: false, s2Done: false
-          };
+          initData.groups[g] = { s1Animal:'',s1Steps:['','','',''],s1Images:['','','',''],s2Animal:'',s2Steps:['','','',''],s2Images:['','','',''],s1Done:false,s2Done:false };
         });
         db.ref('/').set(initData);
       }
       startListeners();
     });
   } catch(e) {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('setup-screen').style.display = 'flex';
-    document.getElementById('setup-err').textContent = 'Firebase 연결 실패: ' + e.message;
-    document.getElementById('setup-err').style.display = 'block';
+    alert('Firebase 연결 실패: ' + e.message);
   }
 }
 
 function startListeners() {
-  // Phase listener
   db.ref('phase').on('value', snap => {
     const p = snap.val() || 'before';
     phase = p;
-    updatePhaseUI(p);
-    redraw();
+    if (isTeacher) { updatePhaseUI(p); redraw(); }
+    else renderStudentArea();
   });
 
-  // Groups listener (realtime)
   db.ref('groups').on('value', snap => {
     const data = snap.val();
     if (!data) return;
@@ -442,64 +486,88 @@ function startListeners() {
           s1Done: d.s1Done || false,
           s2Done: d.s2Done || false,
         };
-        // convert empty strings back to null for images
         ['s1Images','s2Images'].forEach(k => {
           groupData[g][k] = groupData[g][k].map(v => v === '' ? null : v);
         });
       }
     });
-    buildGroupNav();
-    if (currentView === 'overview') renderOverviewArea();
-    else renderWorkspaceArea();
+
+    if (isTeacher) {
+      buildGroupNav();
+      if (currentView === 'overview') renderOverviewArea();
+      else updateWorkspacePartial();  // 커서 보존 방식으로 업데이트
+    } else {
+      updateStudentAreaPartial();  // 학생도 커서 보존
+    }
     if (presentActive) renderPresent();
   });
 
-  // Present state listener — syncs presentation across all devices
+  // presentState — 모든 태블릿에서 동시 반응
   db.ref('presentState').on('value', snap => {
     const ps = snap.val();
     if (!ps) return;
-    if (ps.active && !presentActive) {
-      presentActive = true;
+
+    if (ps.active) {
       pGroup = ps.group || 0;
       pStage = ps.stage || 's1';
-      document.getElementById('present-overlay').classList.add('vis');
-      renderPresent();
-    } else if (!ps.active && presentActive) {
-      presentActive = false;
-      document.getElementById('present-overlay').classList.remove('vis');
-    } else if (ps.active && presentActive) {
-      pGroup = ps.group || 0;
-      pStage = ps.stage || 's1';
-      document.querySelectorAll('.pstab').forEach((t,i) => t.classList.toggle('active', ['s1','s2','all'][i] === pStage));
-      renderPresent();
+
+      if (isTeacher) {
+        // 교사: 발표 오버레이 표시
+        if (!presentActive) {
+          presentActive = true;
+          document.getElementById('present-overlay').classList.add('vis');
+        }
+        document.querySelectorAll('.pstab').forEach((t,i) => t.classList.toggle('active', ['s1','s2','all'][i] === pStage));
+        renderPresent();
+      } else {
+        // 학생: 발표 대기 화면 표시
+        document.getElementById('student-present-notice').classList.add('vis');
+        document.getElementById('student-app').style.display = 'none';
+      }
+    } else {
+      // 발표 종료
+      if (isTeacher) {
+        presentActive = false;
+        document.getElementById('present-overlay').classList.remove('vis');
+      } else {
+        document.getElementById('student-present-notice').classList.remove('vis');
+        document.getElementById('student-app').style.display = 'flex';
+      }
     }
   });
 
   document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  buildGroupNav();
-  showOverview();
+
+  if (isTeacher) {
+    document.getElementById('app').style.display = 'flex';
+    buildGroupNav();
+    showOverview();
+  } else {
+    document.getElementById('student-app').style.display = 'flex';
+    document.getElementById('student-title').textContent = `🌱 ${GROUPS[myGroupIndex]} — 동물의 한살이`;
+    renderStudentArea();
+  }
 }
 
-// 자동 연결 (Firebase URL 고정)
-window.addEventListener('DOMContentLoaded', () => {
-  initFirebase('https://msja-3-3-default-rtdb.firebaseio.com');
-});
+// ── 학생: 발표 트리거 ──
+function studentTriggerPresent() {
+  // 학생이 발표 누르면 자기 모둠, s1부터 전체 공유 발표 시작
+  dbSet('presentState', { active: true, group: myGroupIndex, stage: 's1' });
+}
 
 // ── DB WRITE HELPERS ──
 function dbSet(path, value) {
-  if (demoMode) return;
+  if (!db) return;
   db.ref(path).set(value);
 }
 function dbUpdate(path, value) {
-  if (demoMode) return;
+  if (!db) return;
   db.ref(path).update(value);
 }
 
 // ── PHASE ──
 function setPhase(p) {
   dbSet('phase', p);
-  if (demoMode) { phase = p; updatePhaseUI(p); redraw(); }
 }
 function updatePhaseUI(p) {
   ['before','stage1','stage2','after'].forEach(x => document.getElementById(`pbtn-${x}`).classList.toggle('active', x === p));
@@ -513,20 +581,17 @@ function selectA1(gi, a) {
   groupData[g].s1Animal = a;
   groupData[g].s1Done = false;
   dbUpdate(`groups/${g}`, { s1Animal: a, s1Done: false });
-  if (demoMode) redraw();
 }
 function selectA2(gi, a) {
   const g = GROUPS[gi];
   groupData[g].s2Animal = a;
   groupData[g].s2Done = false;
   dbUpdate(`groups/${g}`, { s2Animal: a, s2Done: false });
-  if (demoMode) redraw();
 }
 function saveText(gi, si, stage, val) {
   const g = GROUPS[gi];
   if (stage === 's1') groupData[g].s1Steps[si] = val;
   else groupData[g].s2Steps[si] = val;
-  // Debounce DB write
   const key = `${gi}-${si}-${stage}`;
   clearTimeout(_localTextTimers[key]);
   _localTextTimers[key] = setTimeout(() => {
@@ -545,7 +610,6 @@ function uploadImg(gi, si, stage, input) {
     else groupData[g].s2Images[si] = val;
     const imgs = stage === 's1' ? [...groupData[g].s1Images] : [...groupData[g].s2Images];
     dbSet(`groups/${g}/${stage}Images`, imgs.map(v => v || ''));
-    if (demoMode) redraw();
   };
   r.readAsDataURL(f);
 }
@@ -555,13 +619,10 @@ function markDone(gi, stage) {
   else groupData[g].s2Done = true;
   dbUpdate(`groups/${g}`, stage === 's1' ? { s1Done: true } : { s2Done: true });
   buildGroupNav();
-  const t = document.getElementById(`toast-${stage}-${gi}`);
-  if (t) { t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
   showToast('저장됐어요! 🎉');
-  if (demoMode) redraw();
 }
 
-// ── NAVIGATION ──
+// ── NAVIGATION (교사) ──
 function buildGroupNav() {
   document.getElementById('group-nav').innerHTML = GROUPS.map((g, i) => {
     const d = groupData[g];
@@ -584,11 +645,11 @@ function showGroup(i) {
   const ab = document.getElementById('all-btn');
   ab.style.background = ''; ab.style.color = '';
   buildGroupNav();
-  renderWorkspaceArea();
+  renderWorkspaceArea(i);
 }
 function redraw() {
   if (currentView === 'overview') renderOverviewArea();
-  else renderWorkspaceArea();
+  else { const i = parseInt(currentView.split('-')[1]); renderWorkspaceArea(i); }
 }
 
 // ── OVERVIEW RENDER ──
@@ -634,9 +695,8 @@ function renderOverviewArea() {
   document.getElementById('content-area').innerHTML = h;
 }
 
-// ── WORKSPACE RENDER ──
-function renderWorkspaceArea() {
-  const i = parseInt(currentView.split('-')[1]);
+// ── 워크스페이스 빌드 HTML ──
+function buildWorkspaceHTML(i) {
   const g = GROUPS[i], d = groupData[g];
   let h = `<div class="workspace">
   <div class="ws-header">
@@ -646,9 +706,14 @@ function renderWorkspaceArea() {
       <button class="ws-btn" onclick="openPrintModalGroup(${i})">🖨️ 인쇄</button>
     </div>
   </div>`;
+  h += buildStage1HTML(i, g, d);
+  h += buildStage2HTML(i, g, d);
+  h += `</div>`;
+  return h;
+}
 
-  // STAGE 1
-  h += `<div class="stage-panel ${(phase==='stage1'||phase==='after')?'vis':''}">`;
+function buildStage1HTML(i, g, d) {
+  let h = `<div class="stage-panel ${(phase==='stage1'||phase==='after')?'vis':''}">`;
   if (phase === 'before') {
     h += `<div class="locked"><div style="font-size:26px;margin-bottom:8px;">🔒</div>아직 활동이 시작되지 않았어요.<br>선생님이 STAGE 1을 열면 시작할 수 있어요.</div>`;
   } else {
@@ -665,19 +730,21 @@ function renderWorkspaceArea() {
             ${d.s1Images[si] ? `<img src="${d.s1Images[si]}">` : '📷 사진/그림 추가'}
             <input type="file" class="img-input" id="s1img-${i}-${si}" accept="image/*" onchange="uploadImg(${i},${si},'s1',this)">
           </div>
-          <textarea class="step-ta" placeholder="${step} 단계를 설명해 보세요..." oninput="saveText(${i},${si},'s1',this.value)">${d.s1Steps[si]}</textarea>
+          <textarea class="step-ta" id="ta-s1-${i}-${si}" placeholder="${step} 단계를 설명해 보세요..." oninput="saveText(${i},${si},'s1',this.value)">${d.s1Steps[si]}</textarea>
         </div>`;
       });
       h += `</div><div class="btn-row">
         <button class="save-btn" onclick="markDone(${i},'s1')">✅ STAGE 1 저장 완료</button>
-        <span class="toast ${d.s1Done?'show':''}" id="toast-s1-${i}">저장됐어요! 🎉</span>
+        ${d.s1Done ? '<span class="toast show">저장됐어요! 🎉</span>' : ''}
       </div>`;
     }
   }
   h += `</div>`;
+  return h;
+}
 
-  // STAGE 2
-  h += `<div class="stage-panel ${(phase==='stage2'||phase==='after')?'vis':''}" style="margin-top:14px;">`;
+function buildStage2HTML(i, g, d) {
+  let h = `<div class="stage-panel ${(phase==='stage2'||phase==='after')?'vis':''}" style="margin-top:14px;">`;
   if (phase === 'before' || phase === 'stage1') {
     h += `<div class="locked"><div style="font-size:26px;margin-bottom:8px;">🔒</div>${phase==='before'?'아직 활동이 시작되지 않았어요.':'STAGE 1 완료 후 선생님이 STAGE 2를 열어요!'}</div>`;
   } else {
@@ -695,54 +762,209 @@ function renderWorkspaceArea() {
             ${d.s2Images[si] ? `<img src="${d.s2Images[si]}">` : '📷 사진/그림 추가'}
             <input type="file" class="img-input" id="s2img-${i}-${si}" accept="image/*" onchange="uploadImg(${i},${si},'s2',this)">
           </div>
-          <textarea class="step-ta ta2" placeholder="${step} 단계를 설명해 보세요..." oninput="saveText(${i},${si},'s2',this.value)">${d.s2Steps[si]}</textarea>
+          <textarea class="step-ta ta2" id="ta-s2-${i}-${si}" placeholder="${step} 단계를 설명해 보세요..." oninput="saveText(${i},${si},'s2',this.value)">${d.s2Steps[si]}</textarea>
         </div>`;
       });
       h += `</div><div class="btn-row">
         <button class="save-btn b2" onclick="markDone(${i},'s2')">✅ STAGE 2 저장 완료</button>
-        <span class="toast ${d.s2Done?'show':''}" id="toast-s2-${i}">저장됐어요! 🎉</span>
+        ${d.s2Done ? '<span class="toast show">저장됐어요! 🎉</span>' : ''}
       </div>`;
     }
   }
-  h += `</div></div>`;
-  document.getElementById('content-area').innerHTML = h;
+  h += `</div>`;
+  return h;
+}
+
+// 교사: 워크스페이스 첫 렌더
+function renderWorkspaceArea(i) {
+  document.getElementById('content-area').innerHTML = buildWorkspaceHTML(i);
+}
+
+// 교사: 커서 보존 부분 업데이트
+function updateWorkspacePartial() {
+  if (currentView === 'overview') { renderOverviewArea(); return; }
+  const i = parseInt(currentView.split('-')[1]);
+  const g = GROUPS[i], d = groupData[g];
+  // 동물 chip만 업데이트 (textarea 건드리지 않음)
+  updateChips(i, d);
+  updateImages(i, d);
+  updateDoneBadges(i, d);
+}
+
+function updateChips(i, d) {
+  document.querySelectorAll(`.chip`).forEach(chip => {
+    const txt = chip.textContent.trim();
+    if (S1_ANIMALS.includes(txt)) chip.classList.toggle('sel1', txt === d.s1Animal);
+    if (S2_ANIMALS.includes(txt)) chip.classList.toggle('sel2', txt === d.s2Animal);
+  });
+}
+function updateImages(i, d) {
+  S1_STEPS.forEach((_, si) => {
+    const box = document.querySelector(`#s1img-${i}-${si}`)?.closest('.img-box');
+    if (box && d.s1Images[si]) {
+      if (!box.querySelector('img')) {
+        const img = document.createElement('img'); img.src = d.s1Images[si]; box.appendChild(img);
+        box.childNodes.forEach(n => { if (n.nodeType === 3) n.remove(); });
+      }
+    }
+  });
+  [0,1,2,3].forEach(si => {
+    const box = document.querySelector(`#s2img-${i}-${si}`)?.closest('.img-box');
+    if (box && d.s2Images[si]) {
+      if (!box.querySelector('img')) {
+        const img = document.createElement('img'); img.src = d.s2Images[si]; box.appendChild(img);
+        box.childNodes.forEach(n => { if (n.nodeType === 3) n.remove(); });
+      }
+    }
+  });
+}
+function updateDoneBadges(i, d) {
+  // progress dots in nav
+  buildGroupNav();
+}
+
+// ── 학생 영역 ──
+function renderStudentArea() {
+  if (myGroupIndex === null) return;
+  const i = myGroupIndex;
+  const g = GROUPS[i], d = groupData[g];
+  // 학생은 자기 모둠만, 사이드바 없음
+  document.getElementById('student-content-area').innerHTML = buildStudentWorkspace(i, g, d);
+}
+
+function buildStudentWorkspace(i, g, d) {
+  let h = '';
+  // STAGE 1
+  if (phase === 'before') {
+    h += `<div class="locked" style="margin-bottom:14px;"><div style="font-size:32px;margin-bottom:8px;">🔒</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">아직 활동이 시작되지 않았어요</div><div style="font-size:12px;">선생님이 활동을 열어주실 때까지 기다려요!</div></div>`;
+    return h;
+  }
+  if (phase === 'stage1' || phase === 'after') {
+    h += `<div class="stage-panel vis">`;
+    h += `<div class="stage-hdr hdr1"><div class="stage-htitle t1">🥚 STAGE 1 — 알을 낳는 동물</div><div class="stage-hdesc">동물 하나를 선택하고, 한살이 4단계를 그림과 글로 조사해서 기록해요.</div></div>
+    <div class="animal-row"><div class="a-label">동물 선택:</div><div class="chips">
+    ${S1_ANIMALS.map(a => `<span class="chip ${d.s1Animal===a?'sel1':''}" onclick="selectA1(${i},'${a}')">${a}</span>`).join('')}
+    </div></div>`;
+    if (d.s1Animal) {
+      h += `<div class="steps-grid">`;
+      S1_STEPS.forEach((step, si) => {
+        h += `<div class="step-card">
+          <div class="step-title"><span class="step-num n1">${si+1}</span><span style="color:var(--s1);">${S1_EMOJIS[si]} ${step}</span></div>
+          <div class="img-box" onclick="document.getElementById('st-s1img-${i}-${si}').click()">
+            ${d.s1Images[si] ? `<img src="${d.s1Images[si]}">` : '📷 사진/그림 추가'}
+            <input type="file" class="img-input" id="st-s1img-${i}-${si}" accept="image/*" onchange="uploadImg(${i},${si},'s1',this)">
+          </div>
+          <textarea class="step-ta" id="st-ta-s1-${i}-${si}" placeholder="${step} 단계를 설명해 보세요..." oninput="saveText(${i},${si},'s1',this.value)">${d.s1Steps[si]}</textarea>
+        </div>`;
+      });
+      h += `</div><div class="btn-row">
+        <button class="save-btn" onclick="markDone(${i},'s1')">✅ STAGE 1 저장 완료</button>
+        ${d.s1Done ? '<span class="toast show">저장됐어요! 🎉</span>' : ''}
+      </div>`;
+    }
+    h += `</div>`;
+  }
+  if (phase === 'stage2' || phase === 'after') {
+    h += `<div class="stage-panel vis" style="margin-top:14px;">`;
+    h += `<div class="stage-hdr hdr2"><div class="stage-htitle t2">🐣 STAGE 2 — 새끼를 낳는 동물</div><div class="stage-hdesc">동물 하나를 선택하고, 한살이 단계를 그림과 글로 조사해서 기록해요.</div></div>
+    <div class="animal-row"><div class="a-label">동물 선택:</div><div class="chips">
+    ${S2_ANIMALS.map(a => `<span class="chip ${d.s2Animal===a?'sel2':''} c2" onclick="selectA2(${i},'${a}')">${a}</span>`).join('')}
+    </div></div>`;
+    if (d.s2Animal) {
+      const steps2 = S2_ANIMAL_STEPS[d.s2Animal] || ['태어남','어린 시기','성장기','어른'];
+      h += `<div class="steps-grid">`;
+      steps2.forEach((step, si) => {
+        h += `<div class="step-card">
+          <div class="step-title"><span class="step-num n2">${si+1}</span><span style="color:var(--s2);">${S2_EMOJIS[si]||'🐾'} ${step}</span></div>
+          <div class="img-box" onclick="document.getElementById('st-s2img-${i}-${si}').click()">
+            ${d.s2Images[si] ? `<img src="${d.s2Images[si]}">` : '📷 사진/그림 추가'}
+            <input type="file" class="img-input" id="st-s2img-${i}-${si}" accept="image/*" onchange="uploadImg(${i},${si},'s2',this)">
+          </div>
+          <textarea class="step-ta ta2" id="st-ta-s2-${i}-${si}" placeholder="${step} 단계를 설명해 보세요..." oninput="saveText(${i},${si},'s2',this.value)">${d.s2Steps[si]}</textarea>
+        </div>`;
+      });
+      h += `</div><div class="btn-row">
+        <button class="save-btn b2" onclick="markDone(${i},'s2')">✅ STAGE 2 저장 완료</button>
+        ${d.s2Done ? '<span class="toast show">저장됐어요! 🎉</span>' : ''}
+      </div>`;
+    }
+    h += `</div>`;
+  }
+  if (phase === 'stage1') {
+    h += `<div class="locked" style="margin-top:14px;"><div style="font-size:26px;margin-bottom:8px;">🔒</div>STAGE 1 완료 후 선생님이 STAGE 2를 열어요!</div>`;
+  }
+  return h;
+}
+
+// 학생: 커서 보존 부분 업데이트
+function updateStudentAreaPartial() {
+  if (myGroupIndex === null) return;
+  const i = myGroupIndex;
+  const g = GROUPS[i], d = groupData[g];
+
+  // chip 상태 업데이트
+  document.querySelectorAll('.chip').forEach(chip => {
+    const txt = chip.textContent.trim();
+    if (S1_ANIMALS.includes(txt)) chip.classList.toggle('sel1', txt === d.s1Animal);
+    if (S2_ANIMALS.includes(txt)) chip.classList.toggle('sel2', txt === d.s2Animal);
+  });
+
+  // 포커스 없는 textarea만 업데이트
+  S1_STEPS.forEach((_, si) => {
+    const ta = document.getElementById(`st-ta-s1-${i}-${si}`);
+    if (ta && document.activeElement !== ta) ta.value = d.s1Steps[si];
+    const box = document.getElementById(`st-s1img-${i}-${si}`)?.closest('.img-box');
+    if (box && d.s1Images[si] && !box.querySelector('img')) {
+      box.innerHTML = `<img src="${d.s1Images[si]}"><input type="file" class="img-input" id="st-s1img-${i}-${si}" accept="image/*" onchange="uploadImg(${i},${si},'s1',this)">`;
+    }
+  });
+  [0,1,2,3].forEach(si => {
+    const ta = document.getElementById(`st-ta-s2-${i}-${si}`);
+    if (ta && document.activeElement !== ta) ta.value = d.s2Steps[si];
+    const box = document.getElementById(`st-s2img-${i}-${si}`)?.closest('.img-box');
+    if (box && d.s2Images[si] && !box.querySelector('img')) {
+      box.innerHTML = `<img src="${d.s2Images[si]}"><input type="file" class="img-input" id="st-s2img-${i}-${si}" accept="image/*" onchange="uploadImg(${i},${si},'s2',this)">`;
+    }
+  });
+
+  // 동물 선택 후 steps-grid가 없으면 전체 재렌더
+  if (d.s1Animal && !document.getElementById(`st-ta-s1-${i}-0`) && (phase === 'stage1' || phase === 'after')) {
+    renderStudentArea();
+  }
+  if (d.s2Animal && !document.getElementById(`st-ta-s2-${i}-0`) && (phase === 'stage2' || phase === 'after')) {
+    renderStudentArea();
+  }
 }
 
 // ── PRESENT ──
 function openPresent() {
   pGroup = 0; pStage = 's1';
   dbSet('presentState', { active: true, group: 0, stage: 's1' });
-  if (demoMode) {
-    presentActive = true;
-    document.getElementById('present-overlay').classList.add('vis');
-    renderPresent();
-  }
 }
 function openPresentGroup(i) {
   pGroup = i; pStage = 's1';
   dbSet('presentState', { active: true, group: i, stage: 's1' });
-  if (demoMode) {
-    presentActive = true;
-    document.getElementById('present-overlay').classList.add('vis');
-    renderPresent();
-  }
 }
 function closePresent() {
   dbSet('presentState', { active: false, group: pGroup, stage: pStage });
-  if (demoMode) {
-    presentActive = false;
-    document.getElementById('present-overlay').classList.remove('vis');
-  }
 }
-function prevGroup() { const ng = Math.max(0, pGroup-1); dbSet('presentState', { active:true, group:ng, stage:pStage }); if(demoMode){pGroup=ng;renderPresent();} }
-function nextGroup() { const ng = Math.min(GROUPS.length-1, pGroup+1); dbSet('presentState', { active:true, group:ng, stage:pStage }); if(demoMode){pGroup=ng;renderPresent();} }
+function prevGroup() {
+  const ng = Math.max(0, pGroup-1);
+  dbSet('presentState', { active:true, group:ng, stage:pStage });
+}
+function nextGroup() {
+  const ng = Math.min(GROUPS.length-1, pGroup+1);
+  dbSet('presentState', { active:true, group:ng, stage:pStage });
+}
 function setPStage(s) {
   pStage = s;
   dbSet('presentState', { active:true, group:pGroup, stage:s });
   document.querySelectorAll('.pstab').forEach((t,i) => t.classList.toggle('active', ['s1','s2','all'][i] === s));
-  if (demoMode) renderPresent();
 }
-function setPGroup(i) { pGroup = i; dbSet('presentState', { active:true, group:i, stage:pStage }); if(demoMode){renderPresent();} }
+function setPGroup(i) {
+  pGroup = i;
+  dbSet('presentState', { active:true, group:i, stage:pStage });
+}
 
 function renderPresent() {
   document.getElementById('p-group-pills').innerHTML = GROUPS.map((g,i) =>
@@ -884,6 +1106,9 @@ function showToast(msg) {
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+// ── START ──
+window.addEventListener('DOMContentLoaded', buildGroupSelectScreen);
 </script>
 </body>
 </html>
